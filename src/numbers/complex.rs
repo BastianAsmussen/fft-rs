@@ -63,13 +63,15 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign};
 
 #[derive(Debug, PartialEq, Clone, Copy)]
+#[repr(C)]
 pub struct Complex {
-    re: f64,
-    im: f64,
+    pub re: f64,
+    pub im: f64,
 }
 
 impl Complex {
     #[must_use]
+    #[inline]
     pub const fn new(re: f64, im: f64) -> Self {
         Self { re, im }
     }
@@ -81,16 +83,7 @@ impl Complex {
     }
 
     #[must_use]
-    pub const fn re(&self) -> f64 {
-        self.re
-    }
-
-    #[must_use]
-    pub const fn im(&self) -> f64 {
-        self.im
-    }
-
-    #[must_use]
+    #[inline]
     pub fn sin(self) -> Self {
         Self::new(
             self.re.sin() * self.im.cosh(),
@@ -99,6 +92,7 @@ impl Complex {
     }
 
     #[must_use]
+    #[inline]
     pub fn cos(self) -> Self {
         Self::new(
             self.re.cos() * self.im.cosh(),
@@ -107,11 +101,13 @@ impl Complex {
     }
 
     #[must_use]
+    #[inline]
     pub fn from_polar(r: f64, theta: f64) -> Self {
         Self::new(r * theta.cos(), r * theta.sin())
     }
 
     #[must_use]
+    #[inline]
     pub fn norm(self) -> f64 {
         self.re.hypot(self.im)
     }
@@ -121,6 +117,7 @@ impl Add for Complex {
     type Output = Self;
 
     /// a + b = (x + yi) + (u + vi) = (x + u) + (y + v)i
+    #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         Self::Output::new(self.re + rhs.re, self.im + rhs.im)
     }
@@ -139,6 +136,7 @@ impl Sub for Complex {
     type Output = Self;
 
     /// a - b = (x + yi) - (u + vi) = (x - u) + (y - v)i
+    #[inline]
     fn sub(self, rhs: Self) -> Self::Output {
         Self::Output::new(self.re - rhs.re, self.im - rhs.im)
     }
@@ -157,6 +155,7 @@ impl Mul for Complex {
     type Output = Self;
 
     /// (a + bi) * (c + di) = ac − bd + (ad + bc)i
+    #[inline]
     fn mul(self, rhs: Self) -> Self::Output {
         let re = self.re.mul_add(rhs.re, -(self.im * rhs.im));
         let im = self.re.mul_add(rhs.im, self.im * rhs.re);
@@ -177,6 +176,7 @@ impl MulAssign for Complex {
 impl Div<f64> for Complex {
     type Output = Self;
 
+    #[inline]
     fn div(self, rhs: f64) -> Self::Output {
         Self::Output::new(self.re / rhs, self.im / rhs)
     }
@@ -194,6 +194,7 @@ impl DivAssign<f64> for Complex {
 impl Rem<f64> for Complex {
     type Output = Self;
 
+    #[inline]
     fn rem(self, rhs: f64) -> Self::Output {
         Self::Output::new(self.re % rhs, self.im % rhs)
     }

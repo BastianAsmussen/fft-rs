@@ -158,12 +158,12 @@ mod tests {
         let result = setup(&[1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0]);
 
         // DC component should be sum of all samples.
-        assert!((result[0].re() - 4.0).abs() < 1e-10);
-        assert!(result[0].im().abs() < 1e-10);
+        assert!((result[0].re - 4.0).abs() < 1e-10);
+        assert!(result[0].im.abs() < 1e-10);
 
         // Test Nyquist frequency component.
-        assert!((result[4].re() - 0.0).abs() < 1e-10);
-        assert!(result[4].im().abs() < 1e-10);
+        assert!((result[4].re - 0.0).abs() < 1e-10);
+        assert!(result[4].im.abs() < 1e-10);
     }
 
     #[test]
@@ -174,6 +174,6 @@ mod tests {
         assert_eq!(result.len(), 4);
 
         // DC component should be sum of all samples.
-        assert!((result[0].re() - 3.0).abs() < 1e-10);
+        assert!((result[0].re - 3.0).abs() < 1e-10);
     }
 }
