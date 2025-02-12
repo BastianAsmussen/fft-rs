@@ -32,8 +32,9 @@
           inherit src;
           strictDeps = true;
 
-          buildInputs = [
+          buildInputs = with pkgs; [
             # Add additional build inputs here.
+            gnuplot
           ] ++ lib.optionals pkgs.stdenv.isDarwin [
             # Additional darwin specific inputs can be set here.
             pkgs.libiconv
