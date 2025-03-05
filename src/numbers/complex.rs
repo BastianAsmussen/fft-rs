@@ -60,7 +60,10 @@
 * numbers do.
 */
 
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign};
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
+};
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 #[repr(C)]
@@ -209,8 +212,21 @@ impl RemAssign<f64> for Complex {
     }
 }
 
+impl Display for Complex {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match (self.re, self.im) {
+            (re, 0.0) => write!(f, "{re}"),
+            (0.0, im) => write!(f, "{im}i"),
+            (re, im) if im > 0.0 => write!(f, "{re} + {im}i"),
+            (re, im) => write!(f, "{} - {}i", re, -im),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use std::f64::consts::PI;
+
     use super::*;
 
     const fn setup() -> (Complex, Complex) {
@@ -270,5 +286,29 @@ mod tests {
         let actual = a % b;
 
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn display_complex() {
+        let (a, _) = setup();
+
+        let expected = "5 + 3i".to_string();
+        let actual = a.to_string();
+
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn confirm_eulers_identity() {
+        const EPSILON: f64 = 1e-10;
+
+        let one = Complex::new(1.0, 0.0);
+        let identity = Complex::new(PI.cos(), PI.sin()) + one;
+
+        let expected = Complex::new(0.0, 0.0).re;
+        let actual = identity.re;
+
+        // e^i*pi + 1 = 0
+        assert!((expected - actual).abs() < EPSILON);
     }
 }
